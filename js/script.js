@@ -61,16 +61,81 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
+// Manipulação do DOM para atualização da data
+const realData = new Date();
+const realYear = realData.getFullYear();
+const realMonth = realData.getMonth() + 1;
+const formatedMonth = String(realMonth).padStart(2, '0');
+const realDay = realData.getDate();
+labelDate.textContent = `${realDay}/${formatedMonth}/${realYear}`
+
+// Função de criação das movimentações financeiras
+const displayMovements = function (movements) {
+    containerMovements.innerHTML = '';
+
+    movements.forEach(function (mov, i) {
+        const type = mov > 0 ? 'deposit' : 'withdrawal';
+        const html = `
+            <div class="movements__row">
+                <div class="movements__type movements__type--${type}">${i + 1} ${type}</div>
+                <div class="movements__value">${mov}€</div>
+            </div>
+        `
+        containerMovements.insertAdjacentHTML("afterbegin", html);
+    });
+};
+displayMovements(account1.movements);
+
+// Função de display do valor de saldo da conta
+const calcDisplayBalance = function (movements) {
+    const balance = movements.reduce((acc, cur) => acc + cur, 0);
+    labelBalance.textContent = `${balance}€`;
+};
+calcDisplayBalance(account1.movements);
+
+// Função de display do valor dos depósitos/saques/interesse
+const calcDisplaySummary = function (movements) {
+    const deposits = movements
+    .filter(mov => mov > 0)
+    .reduce((acc, cur) => acc + cur, 0)
+    labelSumIn.textContent = `${deposits}€`
+
+    const withdrawals = movements
+    .filter(mov => mov < 0)
+    .reduce((acc, cur) => acc + cur, 0);
+    labelSumOut.textContent = `${Math.abs(withdrawals)}€`
+
+    const interest = movements
+    .filter(mov => mov > 0)
+    .map(deposit => (deposit * 1.2 / 100))
+    .filter(int => int >= 1)
+    .reduce((acc, int) => acc + int, 0)
+    labelSumInterest.textContent = `${interest}€`
+}
+calcDisplaySummary(account1.movements)
+
+// Função de criação do login dos usuários
+const createUsernames = function (accounts) {
+    accounts.forEach(function (account){
+        account.username = account.owner
+        .toLowerCase()
+        .split(' ')
+        .map(name => name[0])
+        .join('');
+    });
+};
+createUsernames(accounts);
+
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // LECTURES
 
-const currencies = new Map([
-  ['USD', 'United States dollar'],
-  ['EUR', 'Euro'],
-  ['GBP', 'Pound sterling'],
-]);
+// const currencies = new Map([
+//   ['USD', 'United States dollar'],
+//   ['EUR', 'Euro'],
+//   ['GBP', 'Pound sterling'],
+// ]);
 
-const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
+// const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
-/////////////////////////////////////////////////
+// /////////////////////////////////////////////////
