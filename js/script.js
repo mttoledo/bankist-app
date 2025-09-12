@@ -149,6 +149,7 @@ btnLogin.addEventListener('click', function(event) {
     }
 })
 
+// Event Listener Transferências
 btnTransfer.addEventListener('click', function(event){
     event.preventDefault();
     const amount = Number(inputTransferAmount.value);
@@ -165,6 +166,30 @@ btnTransfer.addEventListener('click', function(event){
 
         updateUI(currentAccount);
     }
+});
+
+// Event Listener Empréstimos
+btnLoan.addEventListener('click', function(event){
+    event.preventDefault();
+    const amount = Number(inputLoanAmount.value);
+    inputLoanAmount.value = '';
+    currentAccount.movements.push(amount);
+    updateUI(currentAccount);
+});
+
+// Event Listener Deletar Conta
+btnClose.addEventListener('click', function(event){
+    event.preventDefault();
+
+    if (
+        inputCloseUsername.value === currentAccount.username &&
+        Number(inputClosePin.value) === currentAccount.pin
+    ) {
+        const index = accounts.findIndex(acc => acc.username === currentAccount.username);
+        accounts.splice(index, 1);
+        containerApp.style.opacity = '0';
+    }
+    inputCloseUsername.value = inputClosePin.value = '';
 });
 
 /////////////////////////////////////////////////
