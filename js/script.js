@@ -84,35 +84,32 @@ const displayMovements = function (movements) {
         containerMovements.insertAdjacentHTML("afterbegin", html);
     });
 };
-displayMovements(account1.movements);
 
 // Função de display do valor de saldo da conta
-const calcDisplayBalance = function (movements) {
-    const balance = movements.reduce((acc, cur) => acc + cur, 0);
-    labelBalance.textContent = `${balance}€`;
+const calcDisplayBalance = function (acc) {
+    acc.balance = acc.movements.reduce((acc, mov) => acc + mov, 0);
+    labelBalance.textContent = `${acc.balance}€`;
 };
-calcDisplayBalance(account1.movements);
 
 // Função de display do valor dos depósitos/saques/interesse
-const calcDisplaySummary = function (movements) {
-    const deposits = movements
+const calcDisplaySummary = function (account) {
+    const deposits = account.movements
     .filter(mov => mov > 0)
     .reduce((acc, cur) => acc + cur, 0)
     labelSumIn.textContent = `${deposits}€`
 
-    const withdrawals = movements
+    const withdrawals = account.movements
     .filter(mov => mov < 0)
     .reduce((acc, cur) => acc + cur, 0);
     labelSumOut.textContent = `${Math.abs(withdrawals)}€`
 
-    const interest = movements
+    const interest = account.movements
     .filter(mov => mov > 0)
-    .map(deposit => (deposit * 1.2 / 100))
+    .map(deposit => (deposit * account.interestRate) / 100)
     .filter(int => int >= 1)
     .reduce((acc, int) => acc + int, 0)
     labelSumInterest.textContent = `${interest}€`
 }
-calcDisplaySummary(account1.movements)
 
 // Função de criação do login dos usuários
 const createUsernames = function (accounts) {
@@ -125,6 +122,50 @@ const createUsernames = function (accounts) {
     });
 };
 createUsernames(accounts);
+
+// Função de Atualização da Interface
+const updateUI = function (acc) {
+    calcDisplaySummary(currentAccount)
+    calcDisplayBalance(currentAccount);
+    displayMovements(currentAccount.movements);
+}
+
+// Event Listener Login
+let currentAccount;
+
+btnLogin.addEventListener('click', function(event) {
+    event.preventDefault();
+    currentAccount = accounts.find(acc => acc.username === inputLoginUsername.value);
+    if (currentAccount?.pin === Number(inputLoginPin.value)) {
+        // Display UI
+        containerApp.style.opacity = '100';
+        // Limpeza dos inputs login e senha
+        inputLoginUsername.value = inputLoginPin.value = '';
+        inputLoginPin.blur();
+        // Chamada das funções para atualizar os dados da conta
+        labelWelcome.textContent = `Welcome back, ${currentAccount.owner.split(' ')[0]}`
+        // Atualização da Interface
+        updateUI(currentAccount);
+    }
+})
+
+btnTransfer.addEventListener('click', function(event){
+    event.preventDefault();
+    const amount = Number(inputTransferAmount.value);
+    const receiverAcc = accounts.find(acc => acc.username === inputTransferTo.value);
+    inputTransferAmount.value = inputTransferTo.value = '';
+    if(
+        amount > 0 &&
+        receiverAcc &&
+        currentAccount.balance >= amount &&
+        receiverAcc?.username !== currentAccount.username
+    ){
+        currentAccount.movements.push(-amount);
+        receiverAcc.movements.push(amount);
+
+        updateUI(currentAccount);
+    }
+});
 
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
