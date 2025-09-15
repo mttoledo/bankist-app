@@ -172,9 +172,13 @@ btnTransfer.addEventListener('click', function(event){
 btnLoan.addEventListener('click', function(event){
     event.preventDefault();
     const amount = Number(inputLoanAmount.value);
+
+    if (amount > 0 && currentAccount.movements.some(mov => mov >= amount * 0.1)) {
+        currentAccount.movements.push(amount);
+        updateUI(currentAccount);
+    }
+
     inputLoanAmount.value = '';
-    currentAccount.movements.push(amount);
-    updateUI(currentAccount);
 });
 
 // Event Listener Deletar Conta
@@ -188,6 +192,7 @@ btnClose.addEventListener('click', function(event){
         const index = accounts.findIndex(acc => acc.username === currentAccount.username);
         accounts.splice(index, 1);
         containerApp.style.opacity = '0';
+        labelWelcome.textContent = `Log in to get started`;
     }
     inputCloseUsername.value = inputClosePin.value = '';
 });
