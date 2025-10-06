@@ -78,7 +78,7 @@ const displayMovements = function (movements) {
         const html = `
             <div class="movements__row">
                 <div class="movements__type movements__type--${type}">${i + 1} ${type}</div>
-                <div class="movements__value">${mov}€</div>
+                <div class="movements__value">${mov.toFixed(2)}€</div>
             </div>
         `
         containerMovements.insertAdjacentHTML("afterbegin", html);
@@ -88,7 +88,7 @@ const displayMovements = function (movements) {
 // Função de display do valor de saldo da conta
 const calcDisplayBalance = function (acc) {
     acc.balance = acc.movements.reduce((acc, mov) => acc + mov, 0);
-    labelBalance.textContent = `${acc.balance}€`;
+    labelBalance.textContent = `${acc.balance.toFixed(2)}€`;
 };
 
 // Função de display do valor dos depósitos/saques/interesse
@@ -96,19 +96,19 @@ const calcDisplaySummary = function (account) {
     const deposits = account.movements
     .filter(mov => mov > 0)
     .reduce((acc, cur) => acc + cur, 0)
-    labelSumIn.textContent = `${deposits}€`
+    labelSumIn.textContent = `${deposits.toFixed(2)}€`
 
     const withdrawals = account.movements
     .filter(mov => mov < 0)
     .reduce((acc, cur) => acc + cur, 0);
-    labelSumOut.textContent = `${Math.abs(withdrawals)}€`
+    labelSumOut.textContent = `${Math.abs(withdrawals).toFixed(2)}€`
 
     const interest = account.movements
     .filter(mov => mov > 0)
     .map(deposit => (deposit * account.interestRate) / 100)
     .filter(int => int >= 1)
     .reduce((acc, int) => acc + int, 0)
-    labelSumInterest.textContent = `${interest}€`
+    labelSumInterest.textContent = `${interest.toFixed(2)}€`
 }
 
 // Função de criação do login dos usuários
@@ -171,7 +171,7 @@ btnTransfer.addEventListener('click', function(event){
 // Event Listener Empréstimos
 btnLoan.addEventListener('click', function(event){
     event.preventDefault();
-    const amount = Number(inputLoanAmount.value);
+    const amount = Math.floor(inputLoanAmount.value);
 
     if (amount > 0 && currentAccount.movements.some(mov => mov >= amount * 0.1)) {
         currentAccount.movements.push(amount);
