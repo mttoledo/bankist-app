@@ -194,8 +194,30 @@ const updateUI = function (acc) {
     displayMovements(acc);
 }
 
-// Event Listener Login
-let currentAccount;
+// Event Listener Login e cronômetro
+let currentAccount, timer;
+
+const startLogOutTimer = function () {
+  const tick = function () {
+    const min = String(Math.trunc(time / 60)).padStart(2, 0);
+    const sec = String(time % 60).padStart(2, 0);
+
+    labelTimer.textContent = `${min}:${sec}`;
+
+    if (time === 0) {
+      clearInterval(timer);
+      labelWelcome.textContent = 'Log in to get started';
+      containerApp.style.opacity = 0;
+    }
+    time--;
+  };
+
+  let time = 300;
+  tick();
+  const timer = setInterval(tick, 1000);
+
+  return timer;
+};
 
 btnLogin.addEventListener('click', function(event) {
     event.preventDefault();
@@ -220,6 +242,10 @@ btnLogin.addEventListener('click', function(event) {
         inputLoginPin.blur();
         // Chamada das funções para atualizar os dados da conta
         labelWelcome.textContent = `Welcome back, ${currentAccount.owner.split(' ')[0]}`
+
+        if (timer) clearInterval(timer);
+        timer = startLogOutTimer();
+
         // Atualização da Interface
         updateUI(currentAccount);
     }
@@ -244,6 +270,9 @@ btnTransfer.addEventListener('click', function(event){
         receiverAcc.movementsDates.push(new Date().toISOString());
 
         updateUI(currentAccount);
+
+        clearInterval(timer);
+        timer = startLogOutTimer();
     }
 });
 
@@ -263,6 +292,9 @@ btnLoan.addEventListener('click', function(event){
     }
 
     inputLoanAmount.value = '';
+
+    clearInterval(timer);
+    timer = startLogOutTimer();
 });
 
 // Event Listener Deletar Conta
