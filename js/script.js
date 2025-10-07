@@ -253,11 +253,13 @@ btnLoan.addEventListener('click', function(event){
     const amount = Math.floor(inputLoanAmount.value);
 
     if (amount > 0 && currentAccount.movements.some(mov => mov >= amount * 0.1)) {
-        currentAccount.movements.push(amount);
+        setTimeout(function(){
+            currentAccount.movements.push(amount);
 
-        currentAccount.movementsDates.push(new Date().toISOString());
+            currentAccount.movementsDates.push(new Date().toISOString());
 
-        updateUI(currentAccount);
+            updateUI(currentAccount);
+        }, 3000);
     }
 
     inputLoanAmount.value = '';
@@ -310,4 +312,13 @@ btnSort.addEventListener('click', function(event){
 //     return 'inactive';
 // });
 
+// setInterval(function(){
+//     const relogio = new Date();
+//     const minRelogio = relogio.getMinutes();
+//     const secRelogio = relogio.getSeconds();
+//     console.log(`${minRelogio}:${secRelogio}`)
+// }, 1000);
 // /////////////////////////////////////////////////
+
+
+
